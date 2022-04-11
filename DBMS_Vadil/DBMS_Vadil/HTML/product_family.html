@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@%5E2/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Create Product Family</title>
+</head>
+<body>
+    <form>
+    <div class="text-gray-400 bg-gray-900 body-font">
+        <div class="container px-5 py-24 mx-auto">
+            <div class="flex flex-col text-center w-full mb-12">
+                <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-white">Project INVENTRIX</h1>
+                <p class="lg:w-2/3 mx-auto leading-relaxed text-base">Enter your Product Family details</p>
+            </div>
+            <div class="flex lg:w-2/3 w-full sm:flex-row flex-col mx-auto px-8 sm:px-0 items-end sm:space-x-4 sm:space-y-0 space-y-4">
+                <div class="relative sm:mb-0 flex-grow w-full">
+                    <label for="pf_name" class="leading-7 text-sm text-gray-400">Family Name</label>
+                    <input type="text" id="pf_name" name="family_name" class="w-full bg-gray-800 bg-opacity-40 rounded border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-900 focus:bg-transparent text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                </div>
+                <div class="relative sm:mb-0 flex-grow w-full">
+                    <label for="pf_dol" class="leading-7 text-sm text-gray-400">Date of Launch</label>
+                    <input type="date" id="pf_dol" name="pf_dol" class="w-full bg-gray-800 bg-opacity-40 rounded border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-900 focus:bg-transparent text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                </div>
+
+                <label for="pf_isactive">Is the product family active:</label>
+                <select name="pf_isactive" id="pf_isactive">
+                    <option value="pf_active">Active</option>
+                    <option value="pf_inactive">Inactive</option>
+                </select>
+
+                <div class="relative sm:mb-0 flex-grow w-full">
+                    <label for="pf_app" class="leading-7 text-sm text-gray-400">Applications</label>
+                    <input type="text" id="pf_app" name="pf_app" class="w-full bg-gray-800 bg-opacity-40 rounded border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-900 focus:bg-transparent text-base outline-none text-gray-100 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                </div>
+
+                <button class="text-white bg-green-500 border-0 py-2 px-8 focus:outline-none hover:bg-green-600 rounded text-lg" onclick="alertfunction(); senddata()">Create record</button>
+                <input type="button" class="text-white bg-green-500 border-0 py-2 px-8 focus:outline-none hover:bg-green-600 rounded text-lg" onclick="window.location.href='pf_table.html';" value="View table and Exit."></input>
+                <!---<input type="button" class="text-white bg-green-500 border-0 py-2 px-8 focus:outline-none hover:bg-green-600 rounded text-lg" onclick="window.location.href='pf_table.html';">View Table and Exit</input>--->
+
+                </div>
+            </div>
+        </div>
+        <div>
+            <textarea id="pf_table" name="pf_table">
+            </textarea>
+        </div>
+        </form>
+    </body>
+
+    <script>
+        function alertfunction() {
+            //alert("Hold on, this may take a while..");
+        }
+        function senddata() {
+            var data = Object();
+            data.pf_name = $('pf_name').value;
+            data.pf_dol = $('pf_dol').value;
+            data.pf_isactive = $('pf_isactive').value;
+            data.pf_app = $('pf_app').value;
+            var FormData = $('form').serialize();
+            $.ajax({
+                url: '../Handler/Handler2.ashx?EventId=1',
+                type: 'POST',
+                data: FormData,
+                async: false,
+                success: SuccessActivities_send,
+                error: ErrorFunction_send
+            });
+        }
+        function updatedata() {
+            var data = Object();
+            data.pf_name = $('pf_name').value;
+            data.pf_dol = $('pf_dol').value;
+            data.pf_isactive = $('pf_isactive').value;
+            data.pf_app = $('pf_app').value;
+            var FormData = $('form').serialize();
+            $.ajax({
+                url: '../Handler/Handler2.ashx?EventId=2',
+                type: 'PUT',
+                data: FormData,
+                async: false,
+                success: SuccessActivities_update,
+                error: ErrorFunction_update
+            });
+        }
+
+        function getdata() {
+            $.ajax({
+                url: '../Handler/Handler2.ashx?EventId=3',
+                type: 'GET',
+                data: {},
+                async: false,
+                success: SuccessActivities_get,
+                error: ErrorFunction_get
+            });
+            return true;
+        }
+
+
+        function SuccessActivities_send() {
+            alert('Data successfully Saved!');
+        }
+
+        function ErrorFunction_send() {
+            alert('Error in saving..');
+        }
+        function SuccessActivities_update() {
+            alert('Update Successful!');
+        }
+
+        function ErrorFunction_update() {
+            alert('Error in updation..');
+        }
+        function SuccessActivities_get(jr) {
+            document.getElementById('pf_table').value = jr;
+            alert('Shown Successfully!');
+
+        }
+        function ErrorFunction_get() {
+
+            alert('Error in showing..');
+        }
+
+        function get_one_record(id) {
+            $.ajax({
+                url: '../Handler/Handler2.ashx?EventId=4&pfid='+id,
+                type: 'GET',
+                data: {},
+                async: false,
+                success: PF_Success_get_one,
+                error: PF_Error_get_one
+            });
+        }
+
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        $(document).ready(function () {
+            var act = getParameterByName('act');
+            var id = getParameterByName('id');
+            if (act == 'edit' && id != null) {
+                get_one_record(id);
+            }
+        });
+
+        function PF_Success_get_one(jr) {
+            var j = JSON.parse(jr);
+            var jt = j.Table1;
+            var record = jt[0];
+            var name = record["pf_name"];
+            var dol = record["pf_dol"];
+            var is_active = record["pf_isactive"];
+            var app = record["pf_app"];
+            $('#pf_name').val(name);
+            $('#pf_dol').val(dol.substring(0,10));
+            $('#pf_isactive').val(is_active == true ? 'pf_active' : 'pf_inactive');
+            $('#pf_app').val(app);
+
+        }
+        function PF_Error_get_one(){
+            alert("Error in getting the record");
+        }
+
+    </script>
+
+    </html>
